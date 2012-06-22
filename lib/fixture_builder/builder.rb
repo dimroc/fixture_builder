@@ -7,6 +7,7 @@ module FixtureBuilder
       @configuration = configuration
       @namer = namer
       @builder_block = builder_block
+      @writer = ::FixtureBuilder::Writer.create(configuration.output_format)
     end
 
     def generate!
@@ -112,12 +113,14 @@ module FixtureBuilder
 
     def write_fixture_file(fixture_data, table_name)
       File.open(fixture_file(table_name), 'w') do |file|
-        file.write fixture_data.to_yaml
+        file.write @writer.write(fixture_data)
+        # file.write fixture_data.to_yaml
       end
     end
 
     def fixture_file(table_name)
-      fixtures_dir("#{table_name}.yml")
+      @writer.file_for(table_name)
+      # fixtures_dir("#{table_name}.yml")
     end
   end
 end

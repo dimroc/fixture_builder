@@ -39,13 +39,24 @@ class FixtureBuilderTest < Test::Unit::TestCase
     assert_equal 'king_of_gnomes', generated_fixture.keys.first
   end
 
-
   def test_configure
     FixtureBuilder.configure do |config|
       assert config.is_a?(FixtureBuilder::Configuration)
       @called = true
     end
     assert @called
+  end
+
+  def test_json_output_format
+    FixtureBuilder.configure do |fbuilder|
+      fbuilder.output_format :json
+      fbuilder.factory do
+        @king_of_gnomes = MagicalCreature.create(:name => 'robert', :species => 'gnome')
+      end
+    end
+
+    generated_fixture = JSON.load(File.open(test_path("fixtures/magical_creatures.json")))
+    assert_equal 'king_of_gnomes', generated_fixture.keys.first
   end
 
   def test_spec_or_test_dir
